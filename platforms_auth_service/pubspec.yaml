@@ -2,14 +2,23 @@ name: platforms_auth_service
 description: A new Flutter package project.
 version: 0.0.1
 homepage:
+publish_to: none
 
 environment:
   sdk: ">=2.17.6 <3.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
+  dio: ^4.0.6
   flutter:
     sdk: flutter
+  flutter_appauth: ^4.1.0+1
+  jwt_decoder: ^2.0.1
+  shared_preferences: ^2.0.15
+  asf_auth_web:
+    git:
+      url: https://github.com/asoftwarefactory/asf-auth-web.git
+      ref: develop
 
 dev_dependencies:
   flutter_test:
