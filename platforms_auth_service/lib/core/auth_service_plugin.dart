@@ -169,6 +169,18 @@ class AuthServicePlugin {
     return await (await _storage).remove(dbLoginKey);
   }
 
+  Future<AuthStorageData> getDataSaved() async {
+    final storageInstance = (await _storage).getString(dbLoginKey);
+
+    if (storageInstance != null) {
+      final loginData = AuthStorageData.fromJson(storageInstance);
+
+      return loginData;
+    } else {
+      throw Exception("Storage Null value");
+    }
+  }
+
   Future<TokenResponse> _doRefreshToken({
     required String tokenEndpoint,
     required String clientId,
