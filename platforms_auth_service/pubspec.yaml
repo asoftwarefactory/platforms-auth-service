@@ -15,10 +15,10 @@ dependencies:
   flutter_appauth: ^4.1.0+1
   jwt_decoder: ^2.0.1
   shared_preferences: ^2.0.15
-  asf_auth_web:
-    git:
-      url: https://github.com/asoftwarefactory/asf-auth-web.git
-      ref: develop
+  #asf_auth_web:
+    #git:
+      #url: https://github.com/asoftwarefactory/asf-auth-web.git
+      #ref: develop
 
 dev_dependencies:
   flutter_test:
@@ -31,18 +31,10 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 
 flutter:
-  plugin:
-    platforms:
-      web:
-        dartPluginClass: AuthServiceWeb
-        # fileName: auth_service_web.dart
-      android:
-        package: auth.service.mobile
-        dartPluginClass: AuthServiceMobile
-        # fileName: auth_service_mobile.dart
-      ios:
-        dartPluginClass: AuthServiceMobile
-        # fileName: auth_service_mobile.dart
+ 
+    
+     
+       
 
   # To add assets to your package, add an assets section, like this:
   # assets:
