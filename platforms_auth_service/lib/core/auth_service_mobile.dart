@@ -1,5 +1,3 @@
-import 'package:asf_auth_web/asf_auth_token_request.dart';
-import 'package:asf_auth_web/asf_auth_web.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
@@ -9,13 +7,12 @@ import 'models/auth_configurations.dart';
 import 'models/auth_data.dart';
 import 'models/auth_storage.dart';
 
-class AuthServicePlugin {
-  AuthServicePlugin({required this.configurations, required this.dbLoginKey});
+class AuthServiceMobile {
+  AuthServiceMobile({required this.configurations, required this.dbLoginKey});
 
   final AuthConfigurations configurations;
 
   final FlutterAppAuth _appAuthService = const FlutterAppAuth();
-  final AsfAuthWeb _appAuthWeb = AsfAuthWeb();
 
   final String dbLoginKey;
 
@@ -28,53 +25,23 @@ class AuthServicePlugin {
   }
 
   Future<AuthData> login() async {
-    AuthorizationTokenResponse? requestLogin;
-
-    if (isWeb) {
-      final appAuthWebResponse = await _appAuthWeb.authenticate(
-        AsfAuthTokenRequest(
-          clientId: configurations.clientId,
-          redirectUrl: configurations.redirectUrl,
-          scopes: configurations.scopes,
-          issuer: configurations.issuer,
-          preferEphemeralSession: false,
-          discoveryUrl: configurations.discoveryUrl,
-          tokenEndpoint: configurations.tokenEndpoint,
-          clientSecret: configurations.clientSecret,
+    final AuthorizationTokenResponse? requestLogin =
+        await _appAuthService.authorizeAndExchangeCode(
+      AuthorizationTokenRequest(
+        configurations.clientId,
+        configurations.redirectUrl,
+        scopes: configurations.scopes,
+        issuer: configurations.issuer,
+        preferEphemeralSession: false,
+        promptValues: configurations.promptValues,
+        serviceConfiguration: AuthorizationServiceConfiguration(
           authorizationEndpoint: configurations.authorizationEndpoint,
-          promptValues: configurations.promptValues,
-          parameter: configurations.additionalParameter,
+          tokenEndpoint: configurations.tokenEndpoint,
+          endSessionEndpoint: configurations.endSessionEndpoint,
         ),
-      );
-
-      requestLogin = AuthorizationTokenResponse(
-        appAuthWebResponse?.accessToken,
-        appAuthWebResponse?.refreshToken,
-        appAuthWebResponse?.accessTokenExpirationDateTime,
-        appAuthWebResponse?.idToken,
-        appAuthWebResponse?.tokenType,
-        null,
-        null,
-        appAuthWebResponse?.tokenAdditionalParameters,
-      );
-    } else {
-      requestLogin = await _appAuthService.authorizeAndExchangeCode(
-        AuthorizationTokenRequest(
-          configurations.clientId,
-          configurations.redirectUrl,
-          scopes: configurations.scopes,
-          issuer: configurations.issuer,
-          preferEphemeralSession: false,
-          promptValues: configurations.promptValues,
-          serviceConfiguration: AuthorizationServiceConfiguration(
-            authorizationEndpoint: configurations.authorizationEndpoint,
-            tokenEndpoint: configurations.tokenEndpoint,
-            endSessionEndpoint: configurations.endSessionEndpoint,
-          ),
-          additionalParameters: configurations.additionalParameter,
-        ),
-      );
-    }
+        additionalParameters: configurations.additionalParameter,
+      ),
+    );
 
     if (!(requestLogin?.accessToken != null &&
         requestLogin?.idToken != null &&
