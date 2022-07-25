@@ -34,12 +34,16 @@ flutter:
   plugin:
     platforms:
       web:
-        pluginClass: AuthServiceWeb
+        dartPluginClass: AuthServiceWeb
+        # fileName: auth_service_web.dart
       android:
         package: auth.service.mobile
-        pluginClass: AuthServiceMobile
+        dartPluginClass: AuthServiceMobile
+        # fileName: auth_service_mobile.dart
       ios:
-        pluginClass: AuthServiceMobile
+        dartPluginClass: AuthServiceMobile
+        # fileName: auth_service_mobile.dart
+
   # To add assets to your package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
