@@ -43,10 +43,17 @@ class AuthServiceMobile {
       ),
     );
 
-    if (!(requestLogin?.accessToken != null &&
+    // required refreshToken
+    /* if (!(requestLogin?.accessToken != null &&
         requestLogin?.idToken != null &&
         requestLogin?.accessTokenExpirationDateTime != null &&
         requestLogin?.refreshToken != null)) {
+      throw Exception("requestLogin value null");
+    } */
+
+    if (!(requestLogin?.accessToken != null &&
+        requestLogin?.idToken != null &&
+        requestLogin?.accessTokenExpirationDateTime != null)) {
       throw Exception("requestLogin value null");
     }
 
@@ -60,7 +67,7 @@ class AuthServiceMobile {
     final AuthStorageData authData = AuthStorageData(
       accessToken: requestLogin.accessToken!,
       expiryDate: requestLogin.accessTokenExpirationDateTime!,
-      refreshToken: requestLogin.refreshToken!,
+      refreshToken: requestLogin.refreshToken,
       idToken: requestLogin.idToken!,
       userId: userId,
     );
@@ -153,7 +160,7 @@ class AuthServiceMobile {
     required String clientId,
     required String redirectUrl,
     required String clientSecret,
-    required String refreshToken,
+    String? refreshToken,
     required String grantType,
     Map<String, String>? additionalParameter,
   }) async {
@@ -164,8 +171,11 @@ class AuthServiceMobile {
       "client_secret": clientSecret,
       "redirect_uri": redirectUrl,
       "grant_type": grantType,
-      "refresh_token": refreshToken,
     });
+
+    if (refreshToken != null) {
+      data.addAll({"refresh_token": refreshToken});
+    }
 
     if (additionalParameter != null) {
       data.addAll(additionalParameter);

@@ -4,31 +4,15 @@ class AuthStorageData {
   final String accessToken;
   final String idToken;
   final DateTime expiryDate;
-  final String refreshToken;
+  String? refreshToken;
   final String userId;
   AuthStorageData({
     required this.accessToken,
     required this.idToken,
     required this.expiryDate,
-    required this.refreshToken,
+    this.refreshToken,
     required this.userId,
   });
-
-  AuthStorageData copyWith({
-    String? accessToken,
-    String? idToken,
-    DateTime? expiryDate,
-    String? refreshToken,
-    String? userId,
-  }) {
-    return AuthStorageData(
-      accessToken: accessToken ?? this.accessToken,
-      idToken: idToken ?? this.idToken,
-      expiryDate: expiryDate ?? this.expiryDate,
-      refreshToken: refreshToken ?? this.refreshToken,
-      userId: userId ?? this.userId,
-    );
-  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -45,7 +29,7 @@ class AuthStorageData {
       accessToken: map['accessToken'] ?? '',
       idToken: map['idToken'] ?? '',
       expiryDate: DateTime.fromMillisecondsSinceEpoch(map['expiryDate']),
-      refreshToken: map['refreshToken'] ?? '',
+      refreshToken: map['refreshToken'],
       userId: map['userId'] ?? '',
     );
   }
@@ -79,5 +63,21 @@ class AuthStorageData {
         expiryDate.hashCode ^
         refreshToken.hashCode ^
         userId.hashCode;
+  }
+
+  AuthStorageData copyWith({
+    String? accessToken,
+    String? idToken,
+    DateTime? expiryDate,
+    String? refreshToken,
+    String? userId,
+  }) {
+    return AuthStorageData(
+      accessToken: accessToken ?? this.accessToken,
+      idToken: idToken ?? this.idToken,
+      expiryDate: expiryDate ?? this.expiryDate,
+      refreshToken: refreshToken ?? this.refreshToken,
+      userId: userId ?? this.userId,
+    );
   }
 }
