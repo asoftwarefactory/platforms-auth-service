@@ -1,4 +1,4 @@
-/* import 'package:asf_auth_web/asf_auth_token_request.dart';
+import 'package:asf_auth_web/asf_auth_token_request.dart';
 import 'package:asf_auth_web/asf_auth_web.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -164,7 +164,7 @@ class AuthServiceWeb {
     required String clientId,
     required String redirectUrl,
     required String clientSecret,
-    required String refreshToken,
+    String? refreshToken,
     required String grantType,
     Map<String, String>? additionalParameter,
   }) async {
@@ -175,8 +175,13 @@ class AuthServiceWeb {
       "client_secret": clientSecret,
       "redirect_uri": redirectUrl,
       "grant_type": grantType,
-      "refresh_token": refreshToken,
     });
+
+    if (refreshToken != null) {
+      data.addAll({
+        "refresh_token": refreshToken,
+      });
+    }
 
     if (additionalParameter != null) {
       data.addAll(additionalParameter);
@@ -215,4 +220,3 @@ class AuthServiceWeb {
     );
   }
 }
- */
