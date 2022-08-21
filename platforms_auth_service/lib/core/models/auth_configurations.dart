@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
+
+import 'package:collection/collection.dart';
 
 class AuthConfigurations {
   final String clientId;
@@ -14,7 +15,6 @@ class AuthConfigurations {
   final Map<String, String> additionalParameter;
   final List<String> scopes;
   final String clientSecret;
-  final String grantType;
   final List<String> promptValues;
 
   AuthConfigurations({
@@ -30,7 +30,6 @@ class AuthConfigurations {
     required this.additionalParameter,
     required this.scopes,
     required this.clientSecret,
-    required this.grantType,
     required this.promptValues,
   });
 
@@ -47,7 +46,6 @@ class AuthConfigurations {
     Map<String, String>? additionalParameter,
     List<String>? scopes,
     String? clientSecret,
-    String? grantType,
     List<String>? promptValues,
   }) {
     return AuthConfigurations(
@@ -56,14 +54,15 @@ class AuthConfigurations {
       redirectUrl: redirectUrl ?? this.redirectUrl,
       issuer: issuer ?? this.issuer,
       discoveryUrl: discoveryUrl ?? this.discoveryUrl,
-      postLogoutRedirectUrl: postLogoutRedirectUrl ?? this.postLogoutRedirectUrl,
-      authorizationEndpoint: authorizationEndpoint ?? this.authorizationEndpoint,
+      postLogoutRedirectUrl:
+          postLogoutRedirectUrl ?? this.postLogoutRedirectUrl,
+      authorizationEndpoint:
+          authorizationEndpoint ?? this.authorizationEndpoint,
       tokenEndpoint: tokenEndpoint ?? this.tokenEndpoint,
       endSessionEndpoint: endSessionEndpoint ?? this.endSessionEndpoint,
       additionalParameter: additionalParameter ?? this.additionalParameter,
       scopes: scopes ?? this.scopes,
       clientSecret: clientSecret ?? this.clientSecret,
-      grantType: grantType ?? this.grantType,
       promptValues: promptValues ?? this.promptValues,
     );
   }
@@ -82,7 +81,6 @@ class AuthConfigurations {
       'additionalParameter': additionalParameter,
       'scopes': scopes,
       'clientSecret': clientSecret,
-      'grantType': grantType,
       'promptValues': promptValues,
     };
   }
@@ -101,7 +99,6 @@ class AuthConfigurations {
       additionalParameter: Map<String, String>.from(map['additionalParameter']),
       scopes: List<String>.from(map['scopes']),
       clientSecret: map['clientSecret'] ?? '',
-      grantType: map['grantType'] ?? '',
       promptValues: List<String>.from(map['promptValues']),
     );
   }
@@ -113,45 +110,44 @@ class AuthConfigurations {
 
   @override
   String toString() {
-    return 'AuthConfigurations(clientId: $clientId, tenantId: $tenantId, redirectUrl: $redirectUrl, issuer: $issuer, discoveryUrl: $discoveryUrl, postLogoutRedirectUrl: $postLogoutRedirectUrl, authorizationEndpoint: $authorizationEndpoint, tokenEndpoint: $tokenEndpoint, endSessionEndpoint: $endSessionEndpoint, additionalParameter: $additionalParameter, scopes: $scopes, clientSecret: $clientSecret, grantType: $grantType, promptValues: $promptValues)';
+    return 'AuthConfigurations(clientId: $clientId, tenantId: $tenantId, redirectUrl: $redirectUrl, issuer: $issuer, discoveryUrl: $discoveryUrl, postLogoutRedirectUrl: $postLogoutRedirectUrl, authorizationEndpoint: $authorizationEndpoint, tokenEndpoint: $tokenEndpoint, endSessionEndpoint: $endSessionEndpoint, additionalParameter: $additionalParameter, scopes: $scopes, clientSecret: $clientSecret, promptValues: $promptValues)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-  
+    final collectionEquals = const DeepCollectionEquality().equals;
+
     return other is AuthConfigurations &&
-      other.clientId == clientId &&
-      other.tenantId == tenantId &&
-      other.redirectUrl == redirectUrl &&
-      other.issuer == issuer &&
-      other.discoveryUrl == discoveryUrl &&
-      other.postLogoutRedirectUrl == postLogoutRedirectUrl &&
-      other.authorizationEndpoint == authorizationEndpoint &&
-      other.tokenEndpoint == tokenEndpoint &&
-      other.endSessionEndpoint == endSessionEndpoint &&
-      mapEquals(other.additionalParameter, additionalParameter) &&
-      listEquals(other.scopes, scopes) &&
-      other.clientSecret == clientSecret &&
-      other.grantType == grantType &&
-      listEquals(other.promptValues, promptValues);
+        other.clientId == clientId &&
+        other.tenantId == tenantId &&
+        other.redirectUrl == redirectUrl &&
+        other.issuer == issuer &&
+        other.discoveryUrl == discoveryUrl &&
+        other.postLogoutRedirectUrl == postLogoutRedirectUrl &&
+        other.authorizationEndpoint == authorizationEndpoint &&
+        other.tokenEndpoint == tokenEndpoint &&
+        other.endSessionEndpoint == endSessionEndpoint &&
+        collectionEquals(other.additionalParameter, additionalParameter) &&
+        collectionEquals(other.scopes, scopes) &&
+        other.clientSecret == clientSecret &&
+        collectionEquals(other.promptValues, promptValues);
   }
 
   @override
   int get hashCode {
     return clientId.hashCode ^
-      tenantId.hashCode ^
-      redirectUrl.hashCode ^
-      issuer.hashCode ^
-      discoveryUrl.hashCode ^
-      postLogoutRedirectUrl.hashCode ^
-      authorizationEndpoint.hashCode ^
-      tokenEndpoint.hashCode ^
-      endSessionEndpoint.hashCode ^
-      additionalParameter.hashCode ^
-      scopes.hashCode ^
-      clientSecret.hashCode ^
-      grantType.hashCode ^
-      promptValues.hashCode;
+        tenantId.hashCode ^
+        redirectUrl.hashCode ^
+        issuer.hashCode ^
+        discoveryUrl.hashCode ^
+        postLogoutRedirectUrl.hashCode ^
+        authorizationEndpoint.hashCode ^
+        tokenEndpoint.hashCode ^
+        endSessionEndpoint.hashCode ^
+        additionalParameter.hashCode ^
+        scopes.hashCode ^
+        clientSecret.hashCode ^
+        promptValues.hashCode;
   }
 }
