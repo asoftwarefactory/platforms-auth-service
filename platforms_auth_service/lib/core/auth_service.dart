@@ -41,7 +41,7 @@ class AuthService {
   }
 
   bool get platformIsIOS {
-    return Platform.isAndroid;
+    return Platform.isIOS;
   }
 
   Future<AuthData> login() async {
