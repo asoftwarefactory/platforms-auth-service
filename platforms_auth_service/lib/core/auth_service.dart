@@ -295,9 +295,8 @@ class AuthService {
     return await (await storageInstance).remove(authDbKey);
   }
 
-  Map<String, String> decodeToken(String accessToken) {
-    return JwtDecoder.decode(accessToken)
-        .map((key, value) => MapEntry(key, jsonEncode(value)));
+  Map<String, dynamic> decodeToken(String accessToken) {
+    return JwtDecoder.decode(accessToken);
   }
 
   CodeData _getCode() {
