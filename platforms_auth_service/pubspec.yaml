@@ -13,20 +13,17 @@ dependencies:
   flutter:
     sdk: flutter
   jwt_decoder: ^2.0.1
-  shared_preferences: ^2.0.15
-  asf_auth_web:
-    git:
-      url: https://github.com/asoftwarefactory/asf-auth-web.git
-      ref: develop
-  collection: ^1.16.0
   flutter_appauth: ^4.2.0
   flutter_web_auth: ^0.4.1
-  pointycastle: ^3.6.1
+  pointycastle: ^3.6.2
+  shared_preferences:
+  collection: 
 
 dev_dependencies:
+  flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
