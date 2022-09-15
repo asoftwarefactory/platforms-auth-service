@@ -12,13 +12,16 @@ dependencies:
   dio: ^4.0.6
   flutter:
     sdk: flutter
-  flutter_appauth: ^4.1.0+1
   jwt_decoder: ^2.0.1
   shared_preferences: ^2.0.15
-  #asf_auth_web:
-    #git:
-      #url: https://github.com/asoftwarefactory/asf-auth-web.git
-      #ref: develop
+  asf_auth_web:
+    git:
+      url: https://github.com/asoftwarefactory/asf-auth-web.git
+      ref: develop
+  collection: ^1.16.0
+  flutter_appauth: ^4.2.0
+  flutter_web_auth: ^0.4.1
+  pointycastle: ^3.6.1
 
 dev_dependencies:
   flutter_test:
@@ -30,12 +33,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 
-flutter:
- 
-    
-     
-       
 
+    # web:
   # To add assets to your package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
