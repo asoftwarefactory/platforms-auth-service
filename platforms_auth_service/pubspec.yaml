@@ -9,7 +9,6 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  dio: ^4.0.6
   flutter:
     sdk: flutter
   jwt_decoder: ^2.0.1
@@ -18,7 +17,8 @@ dependencies:
   pointycastle: ^3.6.2
   shared_preferences:
   collection: 
-
+  dio: 
+  
 dev_dependencies:
   flutter_lints: ^2.0.1
   flutter_test:
