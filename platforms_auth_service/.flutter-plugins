@@ -2,9 +2,9 @@
 flutter_appauth=/Users/mariomazzarelli/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_appauth-4.2.0/
 flutter_web_auth=/Users/mariomazzarelli/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_web_auth-0.4.1/
 path_provider_linux=/Users/mariomazzarelli/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_linux-2.1.7/
-path_provider_windows=/Users/mariomazzarelli/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_windows-2.1.3/
+path_provider_windows=/Users/mariomazzarelli/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_windows-2.1.0/
 shared_preferences=/Users/mariomazzarelli/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-2.0.15/
-shared_preferences_android=/Users/mariomazzarelli/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences_android-2.0.13/
+shared_preferences_android=/Users/mariomazzarelli/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences_android-2.0.12/
 shared_preferences_ios=/Users/mariomazzarelli/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences_ios-2.1.1/
 shared_preferences_linux=/Users/mariomazzarelli/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences_linux-2.1.1/
 shared_preferences_macos=/Users/mariomazzarelli/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences_macos-2.0.4/
