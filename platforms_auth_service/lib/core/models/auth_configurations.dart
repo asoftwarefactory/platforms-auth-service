@@ -18,19 +18,19 @@ class AuthConfigurations {
   final List<String> promptValues;
 
   AuthConfigurations({
-    required this.clientId,
-    required this.tenantId,
-    required this.redirectUrl,
-    required this.issuer,
-    required this.discoveryUrl,
-    required this.postLogoutRedirectUrl,
-    required this.authorizationEndpoint,
-    required this.tokenEndpoint,
-    required this.endSessionEndpoint,
-    required this.additionalParameter,
-    required this.scopes,
-    required this.clientSecret,
-    required this.promptValues,
+    this.clientId = "",
+    this.tenantId = "",
+    this.redirectUrl = "",
+    this.issuer = "",
+    this.discoveryUrl = "",
+    this.postLogoutRedirectUrl = "",
+    this.authorizationEndpoint = "",
+    this.tokenEndpoint = "",
+    this.endSessionEndpoint = "",
+    this.additionalParameter = const {},
+    this.scopes = const [],
+    this.clientSecret = "",
+    this.promptValues = const [],
   });
 
   AuthConfigurations copyWith({
