@@ -162,6 +162,31 @@ class AuthService {
     }
   }
 
+  Future<AuthData> loginWithTokens({
+    required String accessToken,
+    String idToken = "",
+    DateTime? accessTokenExpirationDateTime,
+    String? refreshToken,
+  }) async {
+    final AuthTokens refreshData = AuthTokens(
+      accessToken: accessToken,
+      idToken: idToken,
+      expiryDate: accessTokenExpirationDateTime ?? DateTime.now(),
+      refreshToken: refreshToken, // nullable refresh token
+    );
+
+    final storageResult = await _writeStorage(refreshData);
+
+    if (storageResult) {
+      return AuthData(
+        isAuth: true,
+        accessToken: refreshData.accessToken,
+      );
+    } else {
+      throw Exception("tokens not saved");
+    }
+  }
+
   Future<AuthData> refreshSession() async {
     final loginData = await getTokensSaved();
 
