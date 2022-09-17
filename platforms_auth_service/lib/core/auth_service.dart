@@ -16,7 +16,7 @@ import 'models/code_data.dart';
 
 class AuthService {
   final String authDbKey;
-  final AuthConfigurations configurations;
+  AuthConfigurations configurations;
   final Future<SharedPreferences> storageInstance;
   AuthService({
     required this.authDbKey,
@@ -42,6 +42,10 @@ class AuthService {
 
   bool get platformIsIOS {
     return Platform.isIOS;
+  }
+
+  void setConfigurations(AuthConfigurations intputConfigurations) {
+    configurations = intputConfigurations;
   }
 
   Future<AuthData> login() async {
