@@ -24,26 +24,6 @@ class AuthService {
     required this.configurations,
   });
 
-  String get grantTypeAuthRequest {
-    return "authorization_code";
-  }
-
-  String get grantTypeRefresh {
-    return "refresh_token";
-  }
-
-  bool get platformIsWeb {
-    return kIsWeb;
-  }
-
-  bool get platformIsAndroid {
-    return Platform.isAndroid;
-  }
-
-  bool get platformIsIOS {
-    return Platform.isIOS;
-  }
-
   void setConfigurations(AuthConfigurations intputConfigurations) {
     configurations = intputConfigurations;
   }
@@ -340,5 +320,25 @@ class AuthService {
         .replaceAll('=', '');
 
     return CodeData(codeVerifier: codeVerifier, codeChallenge: codeChallenge);
+  }
+
+  String get grantTypeAuthRequest {
+    return "authorization_code";
+  }
+
+  String get grantTypeRefresh {
+    return "refresh_token";
+  }
+
+  bool get platformIsWeb {
+    return kIsWeb;
+  }
+
+  bool get platformIsAndroid {
+    return Platform.isAndroid;
+  }
+
+  bool get platformIsIOS {
+    return Platform.isIOS;
   }
 }
