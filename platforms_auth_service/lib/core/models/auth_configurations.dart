@@ -16,6 +16,7 @@ class AuthConfigurations {
   final List<String> scopes;
   final String clientSecret;
   final List<String> promptValues;
+  final String? state;
 
   AuthConfigurations({
     this.clientId = "",
@@ -31,6 +32,7 @@ class AuthConfigurations {
     this.scopes = const [],
     this.clientSecret = "",
     this.promptValues = const [],
+    this.state,
   });
 
   AuthConfigurations copyWith({
