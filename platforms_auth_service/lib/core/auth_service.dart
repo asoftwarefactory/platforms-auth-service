@@ -220,51 +220,50 @@ class AuthService {
   Future<bool> logoutMobile() async {
     if (logOutPrompt) {
       const FlutterAppAuth appAuth = FlutterAppAuth();
-      final tokens = await getTokensSaved();
-      await appAuth.endSession(EndSessionRequest(
-        idTokenHint: tokens.idToken,
-        state: configurations.state,
-        postLogoutRedirectUrl: configurations.postLogoutRedirectUrl,
-        issuer: configurations.issuer,
-        preferEphemeralSession: false,
-        serviceConfiguration: AuthorizationServiceConfiguration(
-          authorizationEndpoint: configurations.authorizationEndpoint,
-          tokenEndpoint: configurations.tokenEndpoint,
-          endSessionEndpoint: configurations.endSessionEndpoint,
+
+      await appAuth.endSession(
+        EndSessionRequest(
+          preferEphemeralSession: false,
+          serviceConfiguration: AuthorizationServiceConfiguration(
+            authorizationEndpoint: configurations.authorizationEndpoint,
+            tokenEndpoint: configurations.tokenEndpoint,
+            endSessionEndpoint: _getLogoutUrl(await getTokensSaved()),
+          ),
         ),
-        discoveryUrl: configurations.discoveryUrl,
-        additionalParameters: configurations.additionalParameter,
-      ));
+      );
     }
     return await _clearStorage();
   }
 
   Future<bool> webLogoutRequest() async {
     if (logOutPrompt) {
-      String url = "${configurations.endSessionEndpoint}?";
-      final tokens = await getTokensSaved();
-      final queryParameters = {
-        "id_token_hint": tokens.idToken,
-        "post_logout_redirect_uri": configurations.postLogoutRedirectUrl,
-      };
-      if (configurations.state != null) {
-        queryParameters.addAll({"state": configurations.state!});
-      }
-
-      queryParameters.addAll(configurations.additionalParameter);
-
-      queryParameters.forEach((key, value) {
-        url += "$key=$value";
-        url += "&";
-      });
-      
       await _showWebWindow(
-        url,
+        _getLogoutUrl(await getTokensSaved()),
         configurations.postLogoutRedirectUrl,
       );
     }
 
     return await _clearStorage();
+  }
+
+  String _getLogoutUrl(AuthTokens tokens) {
+    String url = "${configurations.endSessionEndpoint}?";
+
+    final queryParameters = {
+      "id_token_hint": tokens.idToken,
+      "post_logout_redirect_uri": configurations.postLogoutRedirectUrl,
+    };
+    if (configurations.state != null) {
+      queryParameters.addAll({"state": configurations.state!});
+    }
+
+    queryParameters.addAll(configurations.additionalParameter);
+
+    queryParameters.forEach((key, value) {
+      url += "$key=$value";
+      url += "&";
+    });
+    return url;
   }
 
   Future<AuthTokens> getTokensSaved() async {
