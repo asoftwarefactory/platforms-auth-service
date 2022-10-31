@@ -262,7 +262,6 @@ class AuthService {
         url,
         configurations.postLogoutRedirectUrl,
       );
-      return true;
     }
 
     return await _clearStorage();
