@@ -106,10 +106,10 @@ class AuthService {
       url += "$key=$value";
       url += "&";
     });
-    url.removeLastAndSet(test: (e) => e.endsWith("&"));
-    _log("Login Web URL =>  ${url.value}");
+    final urr = url.removeLast(test: (e) => e.endsWith("&"));
+    _log("Login Web URL =>  $urr");
 
-    return url.value;
+    return urr;
   }
 
   Future<AuthData> loginMobile() async {
@@ -275,9 +275,9 @@ class AuthService {
       url += "$key=$value";
       url += "&";
     });
-    url.removeLastAndSet(test: (e) => e.endsWith("&"));
-    _log("Logout URL =>  ${url.value}");
-    return url.value;
+    final urr = url.removeLast(test: (e) => e.endsWith("&"));
+    _log("Logout URL =>  $urr");
+    return urr;
   }
 
   Future<AuthTokens> getTokensSaved() async {
