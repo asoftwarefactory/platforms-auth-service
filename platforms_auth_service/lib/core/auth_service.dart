@@ -1,6 +1,7 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
-import 'dart:math';
+import 'dart:math' as math;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
@@ -43,27 +44,8 @@ class AuthService {
   }
 
   Future<AuthData> loginWEB() async {
-    final authorizationEndpoint = configurations.authorizationEndpoint
-        .removeLast(test: (e) => e.endsWith("/"));
-    String url = "$authorizationEndpoint?";
     final codeData = _getCode();
-    final queryParameters = {
-      "client_id": configurations.clientId,
-      "redirect_uri": configurations.redirectUrl,
-      "response_type": "code",
-      "scope": configurations.scopes.join("+"),
-      "code_challenge_method": "S256",
-      "code_challenge": codeData.codeChallenge,
-      "suppressed_prompt": "login",
-      "prompt": "login",
-    };
-
-    queryParameters.addAll(configurations.additionalParameter);
-
-    queryParameters.forEach((key, value) {
-      url += "$key=$value";
-      url += "&";
-    });
+    final String url = _getLoginUrl(codeData);
 
     final result = await _showWebWindow(url, configurations.redirectUrl);
 
@@ -102,26 +84,51 @@ class AuthService {
     }
   }
 
+  String _getLoginUrl(CodeData codeData) {
+    final authorizationEndpoint = configurations.authorizationEndpoint
+        .removeLast(test: (e) => e.endsWith("/"));
+    String url = "$authorizationEndpoint?";
+
+    final queryParameters = {
+      "client_id": configurations.clientId,
+      "redirect_uri": configurations.redirectUrl,
+      "response_type": "code",
+      "scope": configurations.scopes.join("+"),
+      "code_challenge_method": "S256",
+      "code_challenge": codeData.codeChallenge,
+      "suppressed_prompt": "login",
+      "prompt": "login",
+    };
+
+    queryParameters.addAll(configurations.additionalParameter);
+
+    queryParameters.forEach((key, value) {
+      url += "$key=$value";
+      url += "&";
+    });
+    _log("Login Web URL =>  $url");
+
+    return url;
+  }
+
   Future<AuthData> loginMobile() async {
     const FlutterAppAuth appAuth = FlutterAppAuth();
-
-    final AuthorizationTokenResponse? requestLogin =
-        await appAuth.authorizeAndExchangeCode(
-      AuthorizationTokenRequest(
-        configurations.clientId,
-        configurations.redirectUrl,
-        scopes: configurations.scopes,
-        issuer: configurations.issuer,
-        preferEphemeralSession: false,
-        promptValues: configurations.promptValues,
-        serviceConfiguration: AuthorizationServiceConfiguration(
-          authorizationEndpoint: configurations.authorizationEndpoint,
-          tokenEndpoint: configurations.tokenEndpoint,
-          endSessionEndpoint: configurations.endSessionEndpoint,
-        ),
-        additionalParameters: configurations.additionalParameter,
+    final loginRequest = AuthorizationTokenRequest(
+      configurations.clientId,
+      configurations.redirectUrl,
+      scopes: configurations.scopes,
+      issuer: configurations.issuer,
+      preferEphemeralSession: false,
+      promptValues: configurations.promptValues,
+      serviceConfiguration: AuthorizationServiceConfiguration(
+        authorizationEndpoint: configurations.authorizationEndpoint,
+        tokenEndpoint: configurations.tokenEndpoint,
+        endSessionEndpoint: configurations.endSessionEndpoint,
       ),
+      additionalParameters: configurations.additionalParameter,
     );
+    final AuthorizationTokenResponse? requestLogin =
+        await appAuth.authorizeAndExchangeCode(loginRequest);
 
     if (requestLogin == null ||
         requestLogin.accessToken == null ||
@@ -140,6 +147,7 @@ class AuthService {
     final storageResult = await _writeStorage(authData);
 
     if (storageResult) {
+      _log("Login Mobile Request =>  ${loginRequest.toString()}");
       return AuthData(isAuth: true, accessToken: authData.accessToken);
     } else {
       throw Exception("DB error : tokens not saved");
@@ -200,6 +208,7 @@ class AuthService {
     final storageResult = await _writeStorage(refreshData);
 
     if (storageResult) {
+      _log("Refresh Session => $refreshData");
       return AuthData(
         isAuth: true,
         accessToken: refreshData.accessToken,
@@ -376,7 +385,8 @@ class AuthService {
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
 
     final codeVerifier = List.generate(
-        128, (i) => charset[Random.secure().nextInt(charset.length)]).join();
+            128, (i) => charset[math.Random.secure().nextInt(charset.length)])
+        .join();
 
     final codeChallenge = base64Url
         .encode(
@@ -386,10 +396,10 @@ class AuthService {
     return CodeData(codeVerifier: codeVerifier, codeChallenge: codeChallenge);
   }
 
-  void _log(Object? object) {
+  void _log(String object) {
     if (enableLog) {
       if (kDebugMode) {
-        return print(object);
+        return log(object);
       }
     }
   }
