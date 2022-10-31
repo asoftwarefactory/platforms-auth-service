@@ -10,6 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  extension_methods:
+    git: 
+      url: https://github.com/mariomazz/flutter-libraries.git
+      path: extension_methods 
   jwt_decoder: ^2.0.1
   flutter_appauth: ^4.2.1
   flutter_web_auth: ^0.4.1

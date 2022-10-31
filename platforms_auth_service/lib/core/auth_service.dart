@@ -3,11 +3,11 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
 import 'package:dio/dio.dart';
+import 'package:extension_methods/core/string.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:platforms_auth_service/core/extensions/all.dart';
 import 'package:pointycastle/digests/sha256.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'models/auth_configurations.dart';
@@ -106,9 +106,10 @@ class AuthService {
       url += "$key=$value";
       url += "&";
     });
-    _log("Login Web URL =>  $url");
+    url.removeLastAndSet(test: (e) => e.endsWith("&"));
+    _log("Login Web URL =>  ${url.value}");
 
-    return url;
+    return url.value;
   }
 
   Future<AuthData> loginMobile() async {
@@ -274,8 +275,9 @@ class AuthService {
       url += "$key=$value";
       url += "&";
     });
-    _log("Logout URL =>  $url");
-    return url;
+    url.removeLastAndSet(test: (e) => e.endsWith("&"));
+    _log("Logout URL =>  ${url.value}");
+    return url.value;
   }
 
   Future<AuthTokens> getTokensSaved() async {
