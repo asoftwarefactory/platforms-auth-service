@@ -19,7 +19,9 @@ class AuthService {
   AuthConfigurations configurations;
   final Future<SharedPreferences> storageInstance;
   final bool logOutPrompt;
+  final bool enableLog;
   AuthService({
+    this.enableLog = false,
     this.logOutPrompt = false,
     required this.authDbKey,
     required this.storageInstance,
@@ -263,6 +265,7 @@ class AuthService {
       url += "$key=$value";
       url += "&";
     });
+    _log("Logout URL =>  $url");
     return url;
   }
 
@@ -381,6 +384,14 @@ class AuthService {
         .replaceAll('=', '');
 
     return CodeData(codeVerifier: codeVerifier, codeChallenge: codeChallenge);
+  }
+
+  void _log(Object? object) {
+    if (enableLog) {
+      if (kDebugMode) {
+        return print(object);
+      }
+    }
   }
 
   String get grantTypeAuthRequest {
