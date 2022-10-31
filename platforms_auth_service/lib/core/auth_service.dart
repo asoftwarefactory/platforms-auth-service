@@ -18,7 +18,9 @@ class AuthService {
   final String authDbKey;
   AuthConfigurations configurations;
   final Future<SharedPreferences> storageInstance;
+  final bool logOutPrompt;
   AuthService({
+    this.logOutPrompt = false,
     required this.authDbKey,
     required this.storageInstance,
     required this.configurations,
@@ -40,7 +42,7 @@ class AuthService {
 
   Future<AuthData> loginWEB() async {
     final authorizationEndpoint = configurations.authorizationEndpoint
-        .removeLast(configurations.authorizationEndpoint.endsWith("/"));
+        .removeLast(test: (e) => e.endsWith("/"));
     String url = "$authorizationEndpoint?";
     final codeData = _getCode();
     final queryParameters = {
@@ -61,11 +63,7 @@ class AuthService {
       url += "&";
     });
 
-    final result = await FlutterWebAuth.authenticate(
-      url: url,
-      callbackUrlScheme: configurations.redirectUrl,
-      preferEphemeral: false,
-    );
+    final result = await _showWebWindow(url, configurations.redirectUrl);
 
     final code = Uri.parse(result).queryParameters['code'];
 
@@ -210,6 +208,62 @@ class AuthService {
   }
 
   Future<bool> logout() async {
+    if (platformIsWeb) {
+      return await webLogoutRequest();
+    }
+    if (platformIsAndroid || platformIsIOS) {
+      return await logoutMobile();
+    }
+    throw Exception("Platform not valid");
+  }
+
+  Future<bool> logoutMobile() async {
+    if (logOutPrompt) {
+      const FlutterAppAuth appAuth = FlutterAppAuth();
+      final tokens = await getTokensSaved();
+      await appAuth.endSession(EndSessionRequest(
+        idTokenHint: tokens.idToken,
+        state: configurations.state,
+        postLogoutRedirectUrl: configurations.postLogoutRedirectUrl,
+        issuer: configurations.issuer,
+        preferEphemeralSession: false,
+        serviceConfiguration: AuthorizationServiceConfiguration(
+          authorizationEndpoint: configurations.authorizationEndpoint,
+          tokenEndpoint: configurations.tokenEndpoint,
+          endSessionEndpoint: configurations.endSessionEndpoint,
+        ),
+        discoveryUrl: configurations.discoveryUrl,
+        additionalParameters: configurations.additionalParameter,
+      ));
+    }
+    return await _clearStorage();
+  }
+
+  Future<bool> webLogoutRequest() async {
+    if (logOutPrompt) {
+      String url = "${configurations.endSessionEndpoint}?";
+      final tokens = await getTokensSaved();
+      final queryParameters = {
+        "id_token_hint": tokens.idToken,
+        "post_logout_redirect_uri": configurations.postLogoutRedirectUrl,
+      };
+      if (configurations.state != null) {
+        queryParameters.addAll({"state": configurations.state!});
+      }
+
+      queryParameters.addAll(configurations.additionalParameter);
+
+      queryParameters.forEach((key, value) {
+        url += "$key=$value";
+        url += "&";
+      });
+      
+      await _showWebWindow(
+        url,
+        configurations.postLogoutRedirectUrl,
+      );
+    }
+
     return await _clearStorage();
   }
 
@@ -305,6 +359,14 @@ class AuthService {
 
   static Map<String, dynamic> decodeToken(String accessToken) {
     return JwtDecoder.decode(accessToken);
+  }
+
+  Future<String> _showWebWindow(String url, String callbackUrlScheme) async {
+    return await FlutterWebAuth.authenticate(
+      url: url,
+      callbackUrlScheme: callbackUrlScheme,
+      preferEphemeral: false,
+    );
   }
 
   CodeData _getCode() {
