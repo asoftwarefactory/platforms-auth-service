@@ -109,7 +109,7 @@ class AuthService {
     final urr = url.removeLast(test: (e) => e.endsWith("&"));
     _log("Login Web URL =>  $urr");
 
-    return urr;
+    return urr.trim();
   }
 
   Future<AuthData> loginMobile() async {
@@ -376,8 +376,8 @@ class AuthService {
 
   Future<String> _showWebWindow(String url, String callbackUrlScheme) async {
     return await FlutterWebAuth.authenticate(
-      url: url,
-      callbackUrlScheme: callbackUrlScheme,
+      url: url.trim(),
+      callbackUrlScheme: callbackUrlScheme.trim(),
       preferEphemeral: false,
     );
   }
