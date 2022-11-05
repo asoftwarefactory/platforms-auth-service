@@ -16,7 +16,7 @@ dependencies:
       path: extension_methods 
   jwt_decoder: ^2.0.1
   flutter_appauth: ^4.2.1
-  flutter_web_auth: ^0.4.1
+  flutter_web_auth: ^0.5.0
   pointycastle: ^3.6.2
   shared_preferences:
   collection: 
