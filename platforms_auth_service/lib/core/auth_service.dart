@@ -44,10 +44,10 @@ class AuthService {
   }
 
   Future<AuthData> loginWEB() async {
-    final codeData = _getCode();
-    final String url = _getLoginUrl(codeData);
+    final UrlData urlData = getLoginUrl();
 
-    final result = await _showWebWindow(url, configurations.redirectUrl);
+    final result =
+        await _showWebWindow(urlData.url, configurations.redirectUrl);
 
     final code = Uri.parse(result).queryParameters['code'];
 
@@ -56,7 +56,7 @@ class AuthService {
       clientId: configurations.clientId,
       redirectUrl: configurations.redirectUrl,
       clientSecret: configurations.clientSecret,
-      codeVerifier: codeData.codeVerifier,
+      codeVerifier: urlData.codeVerifier,
       code: code,
       grantType: grantTypeAuthRequest,
       additionalParameter: configurations.additionalParameter,
@@ -84,7 +84,8 @@ class AuthService {
     }
   }
 
-  String _getLoginUrl(CodeData codeData) {
+  UrlData getLoginUrl() {
+    final codeData = _getCode();
     final authorizationEndpoint = configurations.authorizationEndpoint
         .removeLast(test: (e) => e.endsWith("/"));
     String url = "$authorizationEndpoint?";
@@ -109,7 +110,11 @@ class AuthService {
     final urr = url.removeLast(test: (e) => e.endsWith("&"));
     _log("Login Web URL =>  $urr");
 
-    return urr.trim();
+    return UrlData(
+      url: url.trim(),
+      codeVerifier: codeData.codeVerifier,
+      codeChallenge: codeData.codeChallenge,
+    );
   }
 
   Future<AuthData> loginMobile() async {
@@ -239,7 +244,7 @@ class AuthService {
           serviceConfiguration: AuthorizationServiceConfiguration(
             authorizationEndpoint: configurations.authorizationEndpoint,
             tokenEndpoint: configurations.tokenEndpoint,
-            endSessionEndpoint: _getLogoutUrl(await getTokensSaved()),
+            endSessionEndpoint: await getLogoutUrl(),
           ),
         ),
       );
@@ -250,7 +255,7 @@ class AuthService {
   Future<bool> webLogoutRequest() async {
     if (logOutPrompt) {
       await _showWebWindow(
-        _getLogoutUrl(await getTokensSaved()),
+        await getLogoutUrl(),
         configurations.postLogoutRedirectUrl,
       );
     }
@@ -258,7 +263,8 @@ class AuthService {
     return await _clearStorage();
   }
 
-  String _getLogoutUrl(AuthTokens tokens) {
+  Future<String> getLogoutUrl() async {
+    final tokens = await getTokensSaved();
     String url = "${configurations.endSessionEndpoint}?";
 
     final queryParameters = {
