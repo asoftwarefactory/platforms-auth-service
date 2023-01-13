@@ -26,6 +26,23 @@ class AuthService {
     required this.configurations,
   });
 
+  static Future<AuthService> initAndRefreshSession({
+    bool enableLog = false,
+    bool logOutPromptWeb = false,
+    required String authDbKey,
+    required AuthConfigurations configurations,
+  }) async {
+    final instance = AuthService(
+      enableLog: enableLog,
+      logOutPromptWeb: logOutPromptWeb,
+      authDbKey: authDbKey,
+      configurations: configurations,
+    );
+    await instance.refreshSession();
+
+    return instance;
+  }
+
   void setConfigurations(AuthConfigurations intputConfigurations) {
     configurations = intputConfigurations;
   }
