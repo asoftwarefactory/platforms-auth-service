@@ -53,3 +53,12 @@ class CodeData {
   @override
   int get hashCode => codeVerifier.hashCode ^ codeChallenge.hashCode;
 }
+
+class UrlData extends CodeData {
+  final String url;
+  UrlData({
+    required this.url,
+    required super.codeVerifier,
+    required super.codeChallenge,
+  });
+}

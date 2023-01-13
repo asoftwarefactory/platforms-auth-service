@@ -3,11 +3,11 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
 import 'package:dio/dio.dart';
+import 'package:extension_methods/core/string.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:platforms_auth_service/core/extensions/all.dart';
 import 'package:pointycastle/digests/sha256.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'models/auth_configurations.dart';
@@ -44,10 +44,10 @@ class AuthService {
   }
 
   Future<AuthData> loginWEB() async {
-    final codeData = _getCode();
-    final String url = _getLoginUrl(codeData);
+    final UrlData urlData = getLoginUrl();
 
-    final result = await _showWebWindow(url, configurations.redirectUrl);
+    final result =
+        await _showWebWindow(urlData.url, configurations.redirectUrl);
 
     final code = Uri.parse(result).queryParameters['code'];
 
@@ -56,7 +56,7 @@ class AuthService {
       clientId: configurations.clientId,
       redirectUrl: configurations.redirectUrl,
       clientSecret: configurations.clientSecret,
-      codeVerifier: codeData.codeVerifier,
+      codeVerifier: urlData.codeVerifier,
       code: code,
       grantType: grantTypeAuthRequest,
       additionalParameter: configurations.additionalParameter,
@@ -84,7 +84,8 @@ class AuthService {
     }
   }
 
-  String _getLoginUrl(CodeData codeData) {
+  UrlData getLoginUrl() {
+    final codeData = _getCode();
     final authorizationEndpoint = configurations.authorizationEndpoint
         .removeLast(test: (e) => e.endsWith("/"));
     String url = "$authorizationEndpoint?";
@@ -106,9 +107,14 @@ class AuthService {
       url += "$key=$value";
       url += "&";
     });
-    _log("Login Web URL =>  $url");
+    final urr = url.removeLast(test: (e) => e.endsWith("&"));
+    _log("Login Web URL =>  $urr");
 
-    return url;
+    return UrlData(
+      url: url.trim(),
+      codeVerifier: codeData.codeVerifier,
+      codeChallenge: codeData.codeChallenge,
+    );
   }
 
   Future<AuthData> loginMobile() async {
@@ -238,7 +244,7 @@ class AuthService {
           serviceConfiguration: AuthorizationServiceConfiguration(
             authorizationEndpoint: configurations.authorizationEndpoint,
             tokenEndpoint: configurations.tokenEndpoint,
-            endSessionEndpoint: _getLogoutUrl(await getTokensSaved()),
+            endSessionEndpoint: await getLogoutUrl(),
           ),
         ),
       );
@@ -249,7 +255,7 @@ class AuthService {
   Future<bool> webLogoutRequest() async {
     if (logOutPrompt) {
       await _showWebWindow(
-        _getLogoutUrl(await getTokensSaved()),
+        await getLogoutUrl(),
         configurations.postLogoutRedirectUrl,
       );
     }
@@ -257,7 +263,8 @@ class AuthService {
     return await _clearStorage();
   }
 
-  String _getLogoutUrl(AuthTokens tokens) {
+  Future<String> getLogoutUrl() async {
+    final tokens = await getTokensSaved();
     String url = "${configurations.endSessionEndpoint}?";
 
     final queryParameters = {
@@ -274,8 +281,9 @@ class AuthService {
       url += "$key=$value";
       url += "&";
     });
-    _log("Logout URL =>  $url");
-    return url;
+    final urr = url.removeLast(test: (e) => e.endsWith("&"));
+    _log("Logout URL =>  $urr");
+    return urr;
   }
 
   Future<AuthTokens> getTokensSaved() async {
@@ -374,8 +382,8 @@ class AuthService {
 
   Future<String> _showWebWindow(String url, String callbackUrlScheme) async {
     return await FlutterWebAuth.authenticate(
-      url: url,
-      callbackUrlScheme: callbackUrlScheme,
+      url: url.trim(),
+      callbackUrlScheme: callbackUrlScheme.trim(),
       preferEphemeral: false,
     );
   }
