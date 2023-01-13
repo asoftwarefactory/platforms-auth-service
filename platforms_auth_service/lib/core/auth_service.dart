@@ -1,31 +1,28 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 import 'dart:math' as math;
 import 'package:dio/dio.dart';
 import 'package:extension_methods/core/string.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_appauth/flutter_appauth.dart';
-import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:native_oauth_ids/native_oauth_ids.dart';
 import 'package:pointycastle/digests/sha256.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'models/auth_configurations.dart';
 import 'models/auth_data.dart';
 import 'models/auth_tokens.dart';
 import 'models/code_data.dart';
+import 'models/token_response.dart';
 
 class AuthService {
   final String authDbKey;
   AuthConfigurations configurations;
-  final Future<SharedPreferences> storageInstance;
-  final bool logOutPrompt;
+  final bool logOutPromptWeb;
   final bool enableLog;
   AuthService({
     this.enableLog = false,
-    this.logOutPrompt = false,
+    this.logOutPromptWeb = false,
     required this.authDbKey,
-    required this.storageInstance,
     required this.configurations,
   });
 
@@ -34,30 +31,21 @@ class AuthService {
   }
 
   Future<AuthData> login() async {
-    if (platformIsWeb) {
-      return await loginWEB();
-    }
-    if (platformIsAndroid || platformIsIOS) {
-      return await loginMobile();
-    }
-    throw Exception("Platform not valid");
-  }
-
-  Future<AuthData> loginWEB() async {
     final UrlData urlData = getLoginUrl();
-
-    final result =
-        await _showWebWindow(urlData.url, configurations.redirectUrl);
-
-    final code = Uri.parse(result).queryParameters['code'];
-
+    final NativeOauthIds auth = NativeOauthIds();
+    final result = await auth.login(urlData.url);
+    _log("login URL : ${urlData.url}");
+    if (result == null || result.code.isEmpty) {
+      throw Exception("code not received");
+    }
+    _log("login CODE : ${result.code}");
     final TokenResponse requestToken = await _tokenRequest(
       tokenEndpoint: configurations.tokenEndpoint,
       clientId: configurations.clientId,
       redirectUrl: configurations.redirectUrl,
       clientSecret: configurations.clientSecret,
       codeVerifier: urlData.codeVerifier,
-      code: code,
+      code: result.code,
       grantType: grantTypeAuthRequest,
       additionalParameter: configurations.additionalParameter,
     );
@@ -84,88 +72,13 @@ class AuthService {
     }
   }
 
-  UrlData getLoginUrl() {
-    final codeData = _getCode();
-    final authorizationEndpoint = configurations.authorizationEndpoint
-        .removeLast(test: (e) => e.endsWith("/"));
-    String url = "$authorizationEndpoint?";
-
-    final queryParameters = {
-      "client_id": configurations.clientId,
-      "redirect_uri": configurations.redirectUrl,
-      "response_type": "code",
-      "scope": configurations.scopes.join("+"),
-      "code_challenge_method": "S256",
-      "code_challenge": codeData.codeChallenge,
-      "suppressed_prompt": "login",
-      "prompt": "login",
-    };
-
-    queryParameters.addAll(configurations.additionalParameter);
-
-    queryParameters.forEach((key, value) {
-      url += "$key=$value";
-      url += "&";
-    });
-    final urr = url.removeLast(test: (e) => e.endsWith("&"));
-    _log("Login Web URL =>  $urr");
-
-    return UrlData(
-      url: url.trim(),
-      codeVerifier: codeData.codeVerifier,
-      codeChallenge: codeData.codeChallenge,
-    );
-  }
-
-  Future<AuthData> loginMobile() async {
-    const FlutterAppAuth appAuth = FlutterAppAuth();
-    final loginRequest = AuthorizationTokenRequest(
-      configurations.clientId,
-      configurations.redirectUrl,
-      scopes: configurations.scopes,
-      issuer: configurations.issuer,
-      preferEphemeralSession: false,
-      promptValues: configurations.promptValues,
-      serviceConfiguration: AuthorizationServiceConfiguration(
-        authorizationEndpoint: configurations.authorizationEndpoint,
-        tokenEndpoint: configurations.tokenEndpoint,
-        endSessionEndpoint: configurations.endSessionEndpoint,
-      ),
-      additionalParameters: configurations.additionalParameter,
-    );
-    final AuthorizationTokenResponse? requestLogin =
-        await appAuth.authorizeAndExchangeCode(loginRequest);
-
-    if (requestLogin == null ||
-        requestLogin.accessToken == null ||
-        requestLogin.idToken == null ||
-        requestLogin.accessTokenExpirationDateTime == null) {
-      throw Exception("requestLogin value null");
-    }
-
-    final AuthTokens authData = AuthTokens(
-      accessToken: requestLogin.accessToken!,
-      idToken: requestLogin.idToken!,
-      expiryDate: requestLogin.accessTokenExpirationDateTime!,
-      refreshToken: requestLogin.refreshToken, // nullable refresh token
-    );
-
-    final storageResult = await _writeStorage(authData);
-
-    if (storageResult) {
-      _log("Login Mobile Request =>  ${loginRequest.toString()}");
-      return AuthData(isAuth: true, accessToken: authData.accessToken);
-    } else {
-      throw Exception("DB error : tokens not saved");
-    }
-  }
-
   Future<AuthData> loginWithTokens({
     required String accessToken,
     String idToken = "",
     DateTime? accessTokenExpirationDateTime,
     String? refreshToken,
   }) async {
+    _log("loginWithTokens started : $accessToken");
     final AuthTokens refreshData = AuthTokens(
       accessToken: accessToken,
       idToken: idToken,
@@ -225,69 +138,18 @@ class AuthService {
   }
 
   Future<bool> logout() async {
-    if (platformIsWeb) {
-      return await webLogoutRequest();
-    }
-    if (platformIsAndroid || platformIsIOS) {
-      return await logoutMobile();
-    }
-    throw Exception("Platform not valid");
-  }
-
-  Future<bool> logoutMobile() async {
-    if (logOutPrompt) {
-      const FlutterAppAuth appAuth = FlutterAppAuth();
-
-      await appAuth.endSession(
-        EndSessionRequest(
-          preferEphemeralSession: false,
-          serviceConfiguration: AuthorizationServiceConfiguration(
-            authorizationEndpoint: configurations.authorizationEndpoint,
-            tokenEndpoint: configurations.tokenEndpoint,
-            endSessionEndpoint: await getLogoutUrl(),
-          ),
-        ),
-      );
+    if (platformIsWeb && logOutPromptWeb) {
+      final String urlData = await getLogoutUrl();
+      final NativeOauthIds auth = NativeOauthIds();
+      await auth.login(urlData);
+      _log("logout URL : $urlData");
     }
     return await _clearStorage();
-  }
-
-  Future<bool> webLogoutRequest() async {
-    if (logOutPrompt) {
-      await _showWebWindow(
-        await getLogoutUrl(),
-        configurations.postLogoutRedirectUrl,
-      );
-    }
-
-    return await _clearStorage();
-  }
-
-  Future<String> getLogoutUrl() async {
-    final tokens = await getTokensSaved();
-    String url = "${configurations.endSessionEndpoint}?";
-
-    final queryParameters = {
-      "id_token_hint": tokens.idToken,
-      "post_logout_redirect_uri": configurations.postLogoutRedirectUrl,
-    };
-    if (configurations.state != null) {
-      queryParameters.addAll({"state": configurations.state!});
-    }
-
-    queryParameters.addAll(configurations.additionalParameter);
-
-    queryParameters.forEach((key, value) {
-      url += "$key=$value";
-      url += "&";
-    });
-    final urr = url.removeLast(test: (e) => e.endsWith("&"));
-    _log("Logout URL =>  $urr");
-    return urr;
   }
 
   Future<AuthTokens> getTokensSaved() async {
-    final stringDb = (await storageInstance).getString(authDbKey);
+    final stringDb =
+        (await SharedPreferences.getInstance()).getString(authDbKey);
 
     if (stringDb != null) {
       final loginData = AuthTokens.fromJson(stringDb);
@@ -368,24 +230,73 @@ class AuthService {
     );
   }
 
+  UrlData getLoginUrl() {
+    final codeData = _getCode();
+    final authorizationEndpoint = configurations.authorizationEndpoint
+        .removeLast(test: (e) => e.endsWith("/"));
+    String url = "$authorizationEndpoint?";
+
+    final queryParameters = {
+      "client_id": configurations.clientId,
+      "redirect_uri": configurations.redirectUrl,
+      "response_type": "code",
+      "scope": configurations.scopes.join("+"),
+      "code_challenge_method": "S256",
+      "code_challenge": codeData.codeChallenge,
+      "suppressed_prompt": "login",
+      "prompt": "login",
+    };
+
+    queryParameters.addAll(configurations.additionalParameter);
+
+    queryParameters.forEach((key, value) {
+      url += "$key=$value";
+      url += "&";
+    });
+    final urr = url.removeLast(test: (e) => e.endsWith("&"));
+    _log("Login Web URL =>  $urr");
+
+    return UrlData(
+      url: url.trim(),
+      codeVerifier: codeData.codeVerifier,
+      codeChallenge: codeData.codeChallenge,
+    );
+  }
+
+  Future<String> getLogoutUrl() async {
+    final tokens = await getTokensSaved();
+    String url = "${configurations.endSessionEndpoint}?";
+
+    final queryParameters = {
+      "id_token_hint": tokens.idToken,
+      "post_logout_redirect_uri": configurations.postLogoutRedirectUrl,
+    };
+    if (configurations.state != null) {
+      queryParameters.addAll({"state": configurations.state!});
+    }
+
+    queryParameters.addAll(configurations.additionalParameter);
+
+    queryParameters.forEach((key, value) {
+      url += "$key=$value";
+      url += "&";
+    });
+    final urr = url.removeLast(test: (e) => e.endsWith("&"));
+    _log("Logout URL =>  $urr");
+    return urr;
+  }
+
   Future<bool> _writeStorage(AuthTokens data) async {
-    return await (await storageInstance).setString(authDbKey, data.toJson());
+    return await (await SharedPreferences.getInstance())
+        .setString(authDbKey, data.toJson());
   }
 
   Future<bool> _clearStorage() async {
-    return await (await storageInstance).remove(authDbKey);
+    return await (await SharedPreferences.getInstance()).remove(authDbKey);
   }
 
   static Map<String, dynamic> decodeToken(String accessToken) {
     return JwtDecoder.decode(accessToken);
-  }
-
-  Future<String> _showWebWindow(String url, String callbackUrlScheme) async {
-    return await FlutterWebAuth.authenticate(
-      url: url.trim(),
-      callbackUrlScheme: callbackUrlScheme.trim(),
-      preferEphemeral: false,
-    );
   }
 
   CodeData _getCode() {
@@ -422,13 +333,5 @@ class AuthService {
 
   bool get platformIsWeb {
     return kIsWeb;
-  }
-
-  bool get platformIsAndroid {
-    return Platform.isAndroid;
-  }
-
-  bool get platformIsIOS {
-    return Platform.isIOS;
   }
 }

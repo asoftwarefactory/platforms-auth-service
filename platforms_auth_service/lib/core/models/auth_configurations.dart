@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:collection/collection.dart';
-
 class AuthConfigurations {
   final String clientId;
   final String tenantId;
@@ -115,7 +113,7 @@ class AuthConfigurations {
     return 'AuthConfigurations(clientId: $clientId, tenantId: $tenantId, redirectUrl: $redirectUrl, issuer: $issuer, discoveryUrl: $discoveryUrl, postLogoutRedirectUrl: $postLogoutRedirectUrl, authorizationEndpoint: $authorizationEndpoint, tokenEndpoint: $tokenEndpoint, endSessionEndpoint: $endSessionEndpoint, additionalParameter: $additionalParameter, scopes: $scopes, clientSecret: $clientSecret, promptValues: $promptValues)';
   }
 
-  @override
+  /* @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     final collectionEquals = const DeepCollectionEquality().equals;
@@ -134,9 +132,9 @@ class AuthConfigurations {
         collectionEquals(other.scopes, scopes) &&
         other.clientSecret == clientSecret &&
         collectionEquals(other.promptValues, promptValues);
-  }
+  } */
 
-  @override
+/*   @override
   int get hashCode {
     return clientId.hashCode ^
         tenantId.hashCode ^
@@ -151,5 +149,5 @@ class AuthConfigurations {
         scopes.hashCode ^
         clientSecret.hashCode ^
         promptValues.hashCode;
-  }
+  } */
 }

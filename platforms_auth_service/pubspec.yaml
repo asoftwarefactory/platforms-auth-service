@@ -15,12 +15,14 @@ dependencies:
       url: https://github.com/mariomazz/flutter-libraries.git
       path: extension_methods 
   jwt_decoder: ^2.0.1
-  flutter_appauth: ^4.2.1
-  flutter_web_auth: 0.4.1
   pointycastle: ^3.6.2
   shared_preferences:
-  collection: 
-  dio: 
+  dio:
+  native_oauth_ids:
+    git: 
+      url: https://github.com/asoftwarefactory/native_oauth_ids.git
+      ref: pre-prod
+
   
 dev_dependencies:
   flutter_lints: ^2.0.1
