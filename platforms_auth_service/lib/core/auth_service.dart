@@ -127,7 +127,7 @@ class AuthService {
       grantType: grantTypeRefresh,
       additionalParameter: configurations.additionalParameter,
     );
-
+    _log("TOKEN request Success => ${requestRefreshToken.accessToken ?? ''}");
     if (requestRefreshToken.accessToken == null ||
         requestRefreshToken.idToken == null ||
         requestRefreshToken.accessTokenExpirationDateTime == null) {
