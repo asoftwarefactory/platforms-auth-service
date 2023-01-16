@@ -68,14 +68,13 @@ class AuthService {
     );
 
     if (requestToken.accessToken == null ||
-        requestToken.idToken == null ||
         requestToken.accessTokenExpirationDateTime == null) {
       throw Exception("requestLogin value null");
     }
 
     final AuthTokens authData = AuthTokens(
       accessToken: requestToken.accessToken!,
-      idToken: requestToken.idToken!,
+      idToken: requestToken.idToken, // nullable refresh token
       expiryDate: requestToken.accessTokenExpirationDateTime!,
       refreshToken: requestToken.refreshToken, // nullable refresh token
     );
@@ -91,14 +90,14 @@ class AuthService {
 
   Future<AuthData> loginWithTokens({
     required String accessToken,
-    String idToken = "",
+    String? idToken,
     DateTime? accessTokenExpirationDateTime,
     String? refreshToken,
   }) async {
     _log("loginWithTokens started : $accessToken");
     final AuthTokens refreshData = AuthTokens(
       accessToken: accessToken,
-      idToken: idToken,
+      idToken: idToken, // nullable refresh token
       expiryDate: accessTokenExpirationDateTime ?? DateTime.now(),
       refreshToken: refreshToken, // nullable refresh token
     );
@@ -129,14 +128,13 @@ class AuthService {
     );
     _log("TOKEN request Success => ${requestRefreshToken.accessToken ?? ''}");
     if (requestRefreshToken.accessToken == null ||
-        requestRefreshToken.idToken == null ||
         requestRefreshToken.accessTokenExpirationDateTime == null) {
       throw Exception("requestRefresh value null");
     }
 
     final AuthTokens refreshData = AuthTokens(
       accessToken: requestRefreshToken.accessToken!,
-      idToken: requestRefreshToken.idToken!,
+      idToken: requestRefreshToken.idToken, // nullable refresh token
       expiryDate: requestRefreshToken.accessTokenExpirationDateTime!,
       refreshToken: requestRefreshToken.refreshToken, // nullable refresh token
     );
