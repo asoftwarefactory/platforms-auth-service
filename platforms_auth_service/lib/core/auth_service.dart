@@ -159,7 +159,7 @@ class AuthService {
     if (platformIsWeb && logOutPromptWeb) {
       final String urlData = await getLogoutUrl();
       final NativeOauthIds auth = NativeOauthIds();
-      await auth.login(urlData);
+      await auth.login(urlData, redirectUri: configurations.endSessionEndpoint);
       _log("logout URL : $urlData");
     }
     return await _clearStorage();
