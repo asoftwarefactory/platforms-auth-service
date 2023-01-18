@@ -1,10 +1,7 @@
 import 'dart:convert';
 
-import 'package:collection/collection.dart';
-
 class AuthConfigurations {
   final String clientId;
-  final String tenantId;
   final String redirectUrl;
   final String issuer;
   final String discoveryUrl;
@@ -20,7 +17,6 @@ class AuthConfigurations {
 
   AuthConfigurations({
     this.clientId = "",
-    this.tenantId = "",
     this.redirectUrl = "",
     this.issuer = "",
     this.discoveryUrl = "",
@@ -37,7 +33,6 @@ class AuthConfigurations {
 
   AuthConfigurations copyWith({
     String? clientId,
-    String? tenantId,
     String? redirectUrl,
     String? issuer,
     String? discoveryUrl,
@@ -49,10 +44,10 @@ class AuthConfigurations {
     List<String>? scopes,
     String? clientSecret,
     List<String>? promptValues,
+    String? state,
   }) {
     return AuthConfigurations(
       clientId: clientId ?? this.clientId,
-      tenantId: tenantId ?? this.tenantId,
       redirectUrl: redirectUrl ?? this.redirectUrl,
       issuer: issuer ?? this.issuer,
       discoveryUrl: discoveryUrl ?? this.discoveryUrl,
@@ -66,13 +61,13 @@ class AuthConfigurations {
       scopes: scopes ?? this.scopes,
       clientSecret: clientSecret ?? this.clientSecret,
       promptValues: promptValues ?? this.promptValues,
+      state: state ?? this.state,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'clientId': clientId,
-      'tenantId': tenantId,
       'redirectUrl': redirectUrl,
       'issuer': issuer,
       'discoveryUrl': discoveryUrl,
@@ -84,13 +79,13 @@ class AuthConfigurations {
       'scopes': scopes,
       'clientSecret': clientSecret,
       'promptValues': promptValues,
+      'state': state,
     };
   }
 
   factory AuthConfigurations.fromMap(Map<String, dynamic> map) {
     return AuthConfigurations(
       clientId: map['clientId'] ?? '',
-      tenantId: map['tenantId'] ?? '',
       redirectUrl: map['redirectUrl'] ?? '',
       issuer: map['issuer'] ?? '',
       discoveryUrl: map['discoveryUrl'] ?? '',
@@ -102,6 +97,7 @@ class AuthConfigurations {
       scopes: List<String>.from(map['scopes']),
       clientSecret: map['clientSecret'] ?? '',
       promptValues: List<String>.from(map['promptValues']),
+      state: map['state'],
     );
   }
 
@@ -112,44 +108,6 @@ class AuthConfigurations {
 
   @override
   String toString() {
-    return 'AuthConfigurations(clientId: $clientId, tenantId: $tenantId, redirectUrl: $redirectUrl, issuer: $issuer, discoveryUrl: $discoveryUrl, postLogoutRedirectUrl: $postLogoutRedirectUrl, authorizationEndpoint: $authorizationEndpoint, tokenEndpoint: $tokenEndpoint, endSessionEndpoint: $endSessionEndpoint, additionalParameter: $additionalParameter, scopes: $scopes, clientSecret: $clientSecret, promptValues: $promptValues)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    final collectionEquals = const DeepCollectionEquality().equals;
-
-    return other is AuthConfigurations &&
-        other.clientId == clientId &&
-        other.tenantId == tenantId &&
-        other.redirectUrl == redirectUrl &&
-        other.issuer == issuer &&
-        other.discoveryUrl == discoveryUrl &&
-        other.postLogoutRedirectUrl == postLogoutRedirectUrl &&
-        other.authorizationEndpoint == authorizationEndpoint &&
-        other.tokenEndpoint == tokenEndpoint &&
-        other.endSessionEndpoint == endSessionEndpoint &&
-        collectionEquals(other.additionalParameter, additionalParameter) &&
-        collectionEquals(other.scopes, scopes) &&
-        other.clientSecret == clientSecret &&
-        collectionEquals(other.promptValues, promptValues);
-  }
-
-  @override
-  int get hashCode {
-    return clientId.hashCode ^
-        tenantId.hashCode ^
-        redirectUrl.hashCode ^
-        issuer.hashCode ^
-        discoveryUrl.hashCode ^
-        postLogoutRedirectUrl.hashCode ^
-        authorizationEndpoint.hashCode ^
-        tokenEndpoint.hashCode ^
-        endSessionEndpoint.hashCode ^
-        additionalParameter.hashCode ^
-        scopes.hashCode ^
-        clientSecret.hashCode ^
-        promptValues.hashCode;
+    return 'AuthConfigurations(clientId: $clientId, redirectUrl: $redirectUrl, issuer: $issuer, discoveryUrl: $discoveryUrl, postLogoutRedirectUrl: $postLogoutRedirectUrl, authorizationEndpoint: $authorizationEndpoint, tokenEndpoint: $tokenEndpoint, endSessionEndpoint: $endSessionEndpoint, additionalParameter: $additionalParameter, scopes: $scopes, clientSecret: $clientSecret, promptValues: $promptValues, state: $state)';
   }
 }

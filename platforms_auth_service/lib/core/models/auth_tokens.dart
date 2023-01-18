@@ -2,13 +2,13 @@ import 'dart:convert';
 
 class AuthTokens {
   final String accessToken;
-  final String idToken;
+  final String? idToken;
   final DateTime expiryDate;
   final String? refreshToken;
 
   AuthTokens({
     required this.accessToken,
-    required this.idToken,
+    this.idToken,
     required this.expiryDate,
     this.refreshToken,
   });
@@ -31,7 +31,7 @@ class AuthTokens {
     return {
       'accessToken': accessToken,
       'idToken': idToken,
-      'expiryDate': expiryDate.millisecondsSinceEpoch,
+      'expiryDate': expiryDate.toString(),
       'refreshToken': refreshToken,
     };
   }
@@ -39,16 +39,15 @@ class AuthTokens {
   factory AuthTokens.fromMap(Map<String, dynamic> map) {
     return AuthTokens(
       accessToken: map['accessToken'] ?? '',
-      idToken: map['idToken'] ?? '',
-      expiryDate: DateTime.fromMillisecondsSinceEpoch(map['expiryDate']),
+      idToken: map['idToken'],
+      expiryDate: DateTime.parse(map['expiryDate']),
       refreshToken: map['refreshToken'],
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory AuthTokens.fromJson(String source) =>
-      AuthTokens.fromMap(json.decode(source));
+  factory AuthTokens.fromJson(String source) => AuthTokens.fromMap(json.decode(source));
 
   @override
   String toString() {
@@ -58,19 +57,19 @@ class AuthTokens {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-
+  
     return other is AuthTokens &&
-        other.accessToken == accessToken &&
-        other.idToken == idToken &&
-        other.expiryDate == expiryDate &&
-        other.refreshToken == refreshToken;
+      other.accessToken == accessToken &&
+      other.idToken == idToken &&
+      other.expiryDate == expiryDate &&
+      other.refreshToken == refreshToken;
   }
 
   @override
   int get hashCode {
     return accessToken.hashCode ^
-        idToken.hashCode ^
-        expiryDate.hashCode ^
-        refreshToken.hashCode;
+      idToken.hashCode ^
+      expiryDate.hashCode ^
+      refreshToken.hashCode;
   }
 }
