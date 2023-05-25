@@ -50,10 +50,7 @@ class AuthService {
   Future<AuthData> login() async {
     final UrlData urlData = getLoginUrl();
     final NativeOauthIds auth = NativeOauthIds();
-    final result = await auth.login(
-      urlData.url,
-      redirectUri: configurations.redirectUrl,
-    );
+    final result = await auth.login(urlData.url, configurations.redirectUrl);
     _log("login URL : ${urlData.url}");
     if (result == null || result.code.isEmpty) {
       throw Exception("code not received");
@@ -159,7 +156,7 @@ class AuthService {
     if (platformIsWeb && logOutPromptWeb) {
       final String urlData = await getLogoutUrl();
       final NativeOauthIds auth = NativeOauthIds();
-      await auth.login(urlData, redirectUri: configurations.endSessionEndpoint);
+      await auth.login(urlData, configurations.endSessionEndpoint);
       _log("logout URL : $urlData");
     }
     return await _clearStorage();
