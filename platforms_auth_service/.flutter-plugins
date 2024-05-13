@@ -1,11 +1,10 @@
 # This is a generated file; do not edit or check into version control.
-flutter_web_auth=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/flutter_web_auth-0.4.1/
-native_oauth_ids=/Users/mariomazzarelli/.pub-cache/git/native_oauth_ids-a2006a67ae88196a53cf1589fc4e29e18fc1a0bb/
-path_provider_linux=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/path_provider_linux-2.1.11/
-path_provider_windows=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/path_provider_windows-2.1.6/
-shared_preferences=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/shared_preferences-2.1.1/
-shared_preferences_android=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/shared_preferences_android-2.1.4/
-shared_preferences_foundation=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.2.2/
-shared_preferences_linux=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/shared_preferences_linux-2.2.0/
-shared_preferences_web=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/shared_preferences_web-2.1.0/
-shared_preferences_windows=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/shared_preferences_windows-2.2.0/
+native_oauth_ids=/Users/mariomazzarelli/.pub-cache/git/native_oauth_ids-a14e2ffd5d970ab408adee45c5fc84428ea63e4f/
+path_provider_linux=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1/
+path_provider_windows=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/path_provider_windows-2.2.1/
+shared_preferences=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/shared_preferences-2.2.3/
+shared_preferences_android=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/shared_preferences_android-2.2.2/
+shared_preferences_foundation=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.4.0/
+shared_preferences_linux=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/shared_preferences_linux-2.3.2/
+shared_preferences_web=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/shared_preferences_web-2.3.0/
+shared_preferences_windows=/Users/mariomazzarelli/.pub-cache/hosted/pub.dev/shared_preferences_windows-2.3.2/
